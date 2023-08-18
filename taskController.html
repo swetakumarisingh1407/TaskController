@@ -1,0 +1,296 @@
+<template>
+    <div class="container slds-m-bottom_none slds-grid_align-space">
+        <div class="button">
+            <lightning-button variant="brand" label="Create Task" onclick={handleClick}></lightning-button>
+        </div>
+        <lightning-combobox label="Filter By Status" options={picklistValues} placeholder="Filter By Status"
+            onchange={updateFILTERecord}>
+        </lightning-combobox>
+        <div class="searchBar">
+            <lightning-Input class="input slds-dropdown_medium" type="type" label="Filter By Client Name"
+                placeholder="Filter By Client Name" value={searchKey} onchange={updateFILTERecord}></lightning-input>
+            <div class="dropdownClass slds-form-element__control">
+                <template if:true={searchKeyRecods}>
+                    <ul class="slds-dropdown slds-dropdown_left align_data slds-dropdown_medium">
+                        <template for:each={searchedRecords} for:item="option">
+                            <li key={option.Id}>
+                                <a onclick={updateFILTERecord} data-name="clientName"
+                                data-value={option.Client__r.Name}>{option.Client__r.Name}</a>
+                            </li>
+                        </template>
+                    </ul>
+                </template>
+            </div>
+        </div>
+        <lightning-combobox label="Number of Days to Complete" placeholder="Number of Days to Complete"
+            value={selectdays} options={daysValues} onchange={updateFILTERecord}></lightning-combobox>
+        <lightning-input class="togglebox" type="toggle" label="List View" checked={IsActive}
+            message-toggle-active="Enabled" message-toggle-inactive="Disabled"
+            onclick={handleToggleClick}></lightning-input>
+    </div>
+    <template if:true={records}>
+        <template if:false={istogglehandleClick}>
+            <div class="slds-grid  slds-wrap slds-col">
+                <template for:each={records} for:item="item" for:index="index">
+                    <article key={item.Id} class="slds-card sldscard" style={item.Color}>
+
+                        <div class="slds-card__body slds-card__body_inner ">
+                            <div class="demo-only demo-only--sizing slds-grid slds-wrap  slds-grid_align-space">
+                                <div class="slds-size_2-of-5">
+                                    <div class=" slds-m-around_x-small">{item.Status__c}</div>
+                                </div>
+                                <div class="slds-size_1-of-5">
+                                    <div class=" slds-m-around_x-small">{item.Priority__c}</div>
+                                </div>
+                               <div>
+                                    <lightning-icon icon-name="utility:edit" label="Edit" data-id={item.Id}
+                                        size="xx-small" style ="cursor: pointer;" onclick={handleClick}>
+                                    </lightning-icon>
+                                </div>
+                            </div>
+                            <p class="clientName">{item.Client__r.Name}</p><br />
+                            <p> File Complaint : {item.Client__r.Name}</p>
+                            <p>{item.Description__c}</p>
+                            <p>AssignedTo : <a target="_blank" onclick={handleContactClick}
+                                    data-id={item.assiging_to__r.Name}>
+                                    {item.assiging_to__r.Name}</a></p>
+                            <p>Due Date : {item.Due_Date__c}</p>
+                            <p>Number of Days Left : {item.Remaining_Days__c}</p>
+                        </div>
+                    </article>
+                </template>
+            </div>
+        </template>
+        <template if:true={istogglehandleClick}>
+            <lightning-card>
+                <table class="slds-table slds-table_cell-buffer slds-table_bordered ">
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <template for:each={sections} for:item="section">
+                                <th key={section} scope="col">
+                                    <div class="slds-truncate" title={section.Name}>{section.Name}</div>
+                                </th>
+                            </template>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={records} for:item="item" for:index="index">
+                            <tr key={item.Id}>
+                                <td>
+                                    <div data-display={item.Id}>{item.Client__r.Name}</div>
+                                    <div  class='display' data-input={item.Id} hidden>
+                                        <lightning-input  data-id={item.Id} value={item.Client__r.Name}
+                                            onchange={handleToggleChange}></lightning-input>
+                                        </div>
+                                </td>
+                                <td>
+                                    <div data-display={item.Id}>{item.Due_Date__c}</div>
+                                    <div class='display' data-input={item.Id} hidden>
+                                        <lightning-input name="Due_Date__c" type="date" data-id={item.Id}
+                                            value={item.Due_Date__c} onfocusout={handleToggleChange}></lightning-input>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div data-display={item.Id}>{item.Status__c}</div>
+                                    <div class='display' data-input={item.Id} hidden>
+                                        <lightning-combobox name="Status__c" options={picklistValues} data-id={item.Id}
+                                            value={item.Status__c} onfocusout={handleToggleChange}></lightning-combobox>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div data-display={item.Id}>{item.Priority__c}</div>
+                                    <div class='display' data-input={item.Id} hidden>
+                                        <lightning-combobox name="Priority__c" options={priorityValues}
+                                            data-id={item.Id} value={item.Priority__c}
+                                            onfocusout={handleToggleChange}></lightning-combobox>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div data-display={item.Id}>{item.assiging_to__r.Name}</div>
+                                    <div class='display' data-input={item.Id} hidden>
+                                        <lightning-input type="search" name="assiging_to__r.Name" data-id={item.Id}
+                                        value={item.assiging_to__r.Name}
+                                        onfocusout={handleToggleChange}></lightning-input>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div data-display={item.Id}>{item.Description__c}</div>
+                                    <div class='display' data-input={item.Id} hidden>
+                                        <lightning-input data-id={item.Id} name="Description__c"
+                                        value={item.Description__c}
+                                        onfocusout={handleToggleChange}></lightning-input>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div data-display={item.Id}>{item.Note__c}</div>
+                                    <div class="display" data-input={item.Id} hidden>
+                                        <lightning-input data-id={item.Id} name="Note__c" value={item.Note__c}
+                                        onfocusout={handleToggleChange}></lightning-input>
+                                    </div>
+                                </td>
+                                <td>
+                                    <lightning-button icon-name="utility:edit" value={item.Id} variant="bare"
+                                    onclick={handleEditClick}></lightning-button>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+                </br>
+                <template if:true={isEditClick}>
+                    <div class=" slds-grid slds-grid_align-center">
+                        <lightning-button class="buttonbox" variant="Brand" data-name='listSave' label="Save"
+                            onclick={handleSave}></lightning-button>
+                        <lightning-button class="buttonbox" variant="Neutral" label="Cancel"
+                           data-name='toggleCancel' onclick={handleCancel}></lightning-button>
+                    </div>
+                </template>
+            </lightning-card>
+        </template>
+    </template>
+    <!-- modal start -->
+    <template if:true={ishandleClick}>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+            aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- modal header start -->
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                        title="Close" onclick={hideModalBox}>
+                        <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse"
+                            size="small"></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">{headerName}</h2>
+                </header>
+                <!-- modal body start -->
+                <template if:true={displayRecord}>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <div class="slds-grid slds-wrap">
+                            <div
+                                class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left slds-col slds-size_6-of-12 slds-p-horizontal--medium slds-m-bottom_medium">
+                                <lightning-input label="Client" value={displayRecord.Client__r.Name}
+                                onchange={handleChange}></lightning-input>
+                            </div>
+                            <div class="slds-col slds-size_6-of-12 slds-p-horizontal--medium slds-m-bottom_medium">
+                                <lightning-input type="date" label="Due Date" value={displayRecord.Due_Date__c}
+                                onchange={handleChange}></lightning-input>
+                            </div>
+                            <div class="slds-col slds-size_6-of-12 slds-p-horizontal--medium slds-m-bottom_medium">
+                                <lightning-combobox label="Priority" options={priorityValues}
+                                value={displayRecord.Priority__c} onchange={handleChange}></lightning-combobox>
+                            </div>
+                            <div class="slds-col slds-size_6-of-12 slds-p-horizontal--medium slds-m-bottom_medium">
+                                <lightning-combobox label="Status" options={picklistValues}
+                                value={displayRecord.Status__c} onchange={handleChange}></lightning-combobox>
+                            </div>
+                            <div
+                                class="slds-form-element__control slds-col slds-size_6-of-12 slds-p-horizontal--medium slds-m-bottom_medium">
+                               <lightning-input type="search" label="Assigned To"
+                                value={displayRecord.assiging_to__r.Name} onchange={handleChangeUserName}></lightning-input>
+                                <div class="dropdownClass slds-form-element__control">
+                                    <template if:true={usersName}>
+                                        <ul class="slds-dropdown slds-dropdown_left align_data slds-dropdown_fluid">
+                                            <template for:each={allActiveUserNames} for:item="option">
+                                                <li key={id}>
+                                                    <a onclick={handleChange} data-id={option.id}
+                                                    data-name='activeUserName'
+                                                    data-value={option.Name}> {option.Name}</a>
+                                                </li>
+                                            </template>
+                                        </ul>
+                                    </template>
+                                </div>
+                            </div>
+                            <div
+                                class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left slds-col slds-size_6-of-12 slds-p-horizontal--medium slds-m-bottom_medium">
+                                <lightning-input type="text" label="Notes" value={displayRecord.Note__c}
+                                onchange={handleChange}></lightning-input>
+                            </div>
+                        </div>
+                        <div>
+                            <lightning-textarea label="Description" value={displayRecord.Description__c}
+                                onchange={handleChange}></lightning-textarea>
+                        </div>
+                    </div>
+                </template>
+                <template if:false={displayRecord}>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <div class="slds-grid slds-wrap">
+                            <div
+                                class="slds-form-element__control  slds-col slds-size_6-of-12 slds-p-horizontal--medium slds-m-bottom_medium">
+                                <lightning-input type="search" label="Client" value={searchClientNameKey}
+                                onchange={handleNewCaseChecklist}></lightning-input>
+                                <div class="dropdownClass slds-form-element__control">
+                                    <template if:true={searchKeyClientRecods}>
+                                        <ul class="slds-dropdown slds-dropdown_left align_data slds-dropdown_fluid">
+                                            <template for:each={searchedRecords} for:item="option">
+                                                <li key={option.Id}>
+                                                    <a onclick={handleCreateTask} data-id={option.Client__c}
+                                                    data-name='clientName'
+                                                    data-value={option.Client__r.Name}>{option.Client__r.Name}</a>
+                                                </li>
+                                            </template>
+                                        </ul>
+                                    </template>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_6-of-12 slds-p-horizontal--medium slds-m-bottom_medium">
+                                <lightning-input type="text" label="Case Name" value=''
+                                onchange={handleCreateTask}></lightning-input>
+                            </div>
+                            <div class="slds-col slds-size_6-of-12 slds-p-horizontal--medium slds-m-bottom_medium">
+                                <lightning-input type="date" label="Due Date" value=''
+                                    onchange={handleCreateTask}></lightning-input>
+                            </div>
+                            <div class="slds-col slds-size_6-of-12 slds-p-horizontal--medium slds-m-bottom_medium">
+                                <lightning-combobox label="Priority" options={priorityValues} value=''
+                                    onchange={handleCreateTask}></lightning-combobox>
+                            </div>
+                            <div class="slds-col slds-size_6-of-12 slds-p-horizontal--medium slds-m-bottom_medium">
+                                <lightning-combobox label="Status" options={picklistValues} value=''
+                                    onchange={handleCreateTask}></lightning-combobox>
+                            </div>
+                            <div
+                                class="slds-form-element__control slds-col slds-size_6-of-12 slds-p-horizontal--medium slds-m-bottom_medium">
+                                <lightning-input type="search" label="Assigned To" value={searchAssignedToKey}
+                                    onchange={handleNewCaseChecklist}></lightning-input>
+                                <div class="dropdownClass slds-form-element__control">
+                                    <template if:true={assignedKeyRecods}>
+                                        <ul class="slds-dropdown slds-dropdown_left align_data slds-dropdown_fluid">
+                                            <template for:each={assignedToRecords} for:item="option">
+                                                <li key={id}>
+                                                    <a onclick={handleCreateTask} data-id={option.Id}
+                                                    data-name='assignedTo'
+                                                    data-value={option.Name}> {option.Name}</a>
+                                                </li>
+                                            </template>
+                                        </ul>
+                                    </template>
+                                </div>
+                            </div>
+                            <div
+                                class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left slds-col slds-size_6-of-12 slds-p-horizontal--medium slds-m-bottom_medium">
+                                <lightning-input type="text" label="Notes" value=''
+                                    onchange={handleCreateTask}></lightning-input>
+                            </div>
+                        </div>
+                        <div>
+                            <lightning-textarea label="Description" value=''
+                                onchange={handleCreateTask}></lightning-textarea>
+                        </div>
+                    </div>
+                </template>
+                <!-- modal footer start-->
+                <footer class="slds-modal__footer">
+                    <div class="slds-grid slds-grid_align-center">
+                        <button class="slds-button slds-button_brand" data-name='createAndUpdateSave' onclick={handleSave}>Save</button>
+                        <button class="slds-button slds-button_neutral" data-name='cancelPopupbutton' onclick={handleCancel}>Cancel</button>
+                    </div>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+    <!-- modal end -->
+</template>
